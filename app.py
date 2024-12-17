@@ -72,7 +72,7 @@ def recommend():
 def stream():
     video_id = request.args.get('video_id')
     video_url = f"https://www.youtube.com/watch?v={video_id}"
-    ydl_opts = {'format': 'bestaudio/best', 'quiet': True}
+    ydl_opts = {'format': 'bestaudio/best', 'quiet': True,'cookies': 'cookies.txt'}
     with YoutubeDL(ydl_opts) as ydl:
         info = ydl.extract_info(video_url, download=False)
         return jsonify({'audio_url': info['url']})
