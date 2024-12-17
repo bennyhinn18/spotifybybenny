@@ -20,5 +20,5 @@ ENV FLASK_RUN_HOST=0.0.0.0
 # Expose the port the app runs on
 EXPOSE 5000
 
-# Run the application
-CMD ["flask", "run"]
+# Run the application with Gunicorn
+CMD ["gunicorn", "app:app", "--bind", "0.0.0.0:5000"]

@@ -92,4 +92,50 @@ function playAudio(videoId) {
             audioPlayer.src = data.audio_url;
             audioPlayer.play();
         });
+        fetchRecommendations(videoId);
 }
+const recommendedDiv = document.createElement('div');
+recommendedDiv.id = 'recommended';
+document.querySelector('.container').appendChild(recommendedDiv);
+
+// Fetch recommendations for the current song
+function fetchRecommendations(videoId) {
+    fetch(`/recommend?video_id=${videoId}`)
+        .then(response => response.json())
+        .then(data => {
+            recommendedDiv.innerHTML = '<h3>Recommended Songs</h3>';
+            data.forEach(item => {
+                const div = document.createElement('div');
+                div.className = 'recommended-item';
+
+                div.innerHTML = `
+                    <img src="${item.thumbnail}" alt="Thumbnail">
+                    <span>${item.title}</span>
+                    <button class="play-btn" data-video-id="${item.videoId}">Play</button>
+                `;
+
+                recommendedDiv.appendChild(div);
+            });
+        });
+}
+
+// Play the first recommended song if "Up Next" is empty
+audioPlayer.addEventListener('ended', () => {
+    if (upNextQueue.length === 0 && recommendedDiv.children.length > 1) {
+        const firstRecommendation = recommendedDiv.querySelector('.play-btn');
+        if (firstRecommendation) {
+            const videoId = firstRecommendation.getAttribute('data-video-id');
+            playAudio(videoId);
+            
+        }
+    }
+});
+
+// Play recommended song directly
+recommendedDiv.addEventListener('click', event => {
+    if (event.target.classList.contains('play-btn')) {
+        const videoId = event.target.getAttribute('data-video-id');
+        playAudio(videoId);
+    }
+});
+

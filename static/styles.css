@@ -103,3 +103,49 @@ button:hover {
 .up-next-item button:hover {
     opacity: 0.9;
 }
+#recommended {
+    margin-top: 30px;
+    padding: 15px;
+    border-top: 1px solid #ddd;
+    background: #f9f9f9;
+}
+
+#recommended h3 {
+    margin: 0 0 10px;
+    font-size: 1.2em;
+}
+
+.recommended-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    background: #fff;
+}
+
+.recommended-item img {
+    width: 60px;
+    height: 60px;
+    margin-right: 10px;
+}
+
+.recommended-item span {
+    flex-grow: 1;
+    font-size: 1em;
+}
+
+.recommended-item button {
+    background: #007bff;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.recommended-item button:hover {
+    opacity: 0.9;
+}

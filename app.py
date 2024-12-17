@@ -3,12 +3,14 @@ from yt_dlp import YoutubeDL
 import requests
 import os
 from dotenv import load_dotenv
+from youtubesearchpython import VideosSearch
 
 # Load environment variables from .env file
 load_dotenv()
 
 app = Flask(__name__)
 API_KEY = os.getenv('API_KEY')
+RAPIDAPI_KEY = os.getenv('RAPIDAPI_KEY')
 BASE_URL = 'https://www.googleapis.com/youtube/v3'
 
 @app.route('/')
@@ -30,6 +32,41 @@ def search():
         for item in data.get('items', [])
     ]
     return jsonify(results)
+
+@app.route('/recommend', methods=['GET'])
+def recommend():
+    video_id = request.args.get('video_id')
+    if not video_id:
+        return jsonify({'error': 'Video ID is required'}), 400
+
+    # Fetch recommended videos using RapidAPI YouTube Data API
+    url = "https://youtube-v31.p.rapidapi.com/search"
+    querystring = {
+        "relatedToVideoId": video_id,
+        "part": "id,snippet",
+        "type": "video",
+        "maxResults": "50"
+    }
+    headers = {
+        "x-rapidapi-key": RAPIDAPI_KEY,
+        "x-rapidapi-host": "youtube-v31.p.rapidapi.com"
+    }
+    response = requests.get(url, headers=headers, params=querystring)
+    data = response.json()
+
+    # Check if 'items' key is in the response
+    if 'items' not in data:
+        return jsonify({'error': 'No recommendations found'}), 404
+
+    recommendations = [
+        {
+            'title': item['snippet']['title'],
+            'videoId': item['id']['videoId'],
+            'thumbnail': item['snippet']['thumbnails']['default']['url']
+        }
+        for item in data['items']
+    ]
+    return jsonify(recommendations)
 
 @app.route('/stream', methods=['GET'])
 def stream():
