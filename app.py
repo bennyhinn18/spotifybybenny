@@ -3,7 +3,7 @@ from pytubefix import YouTube
 import requests
 import os
 from dotenv import load_dotenv
-from youtubesearchpython import VideosSearch
+
 
 # Load environment variables from .env file
 load_dotenv()
