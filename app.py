@@ -1,5 +1,5 @@
 from flask import Flask, request, jsonify, render_template
-from yt_dlp import YoutubeDL
+from pytubefix import YouTube
 import requests
 import os
 from dotenv import load_dotenv
@@ -39,7 +39,6 @@ def recommend():
     if not video_id:
         return jsonify({'error': 'Video ID is required'}), 400
 
-    # Fetch recommended videos using RapidAPI YouTube Data API
     url = "https://youtube-v31.p.rapidapi.com/search"
     querystring = {
         "relatedToVideoId": video_id,
@@ -54,7 +53,6 @@ def recommend():
     response = requests.get(url, headers=headers, params=querystring)
     data = response.json()
 
-    # Check if 'items' key is in the response
     if 'items' not in data:
         return jsonify({'error': 'No recommendations found'}), 404
 
@@ -71,11 +69,17 @@ def recommend():
 @app.route('/stream', methods=['GET'])
 def stream():
     video_id = request.args.get('video_id')
+    if not video_id:
+        return jsonify({'error': 'Video ID is required'}), 400
+
     video_url = f"https://www.youtube.com/watch?v={video_id}"
-    ydl_opts = {'format': 'bestaudio/best', 'quiet': True,'cookies': 'cookies.txt'}
-    with YoutubeDL(ydl_opts) as ydl:
-        info = ydl.extract_info(video_url, download=False)
-        return jsonify({'audio_url': info['url']})
+    try:
+        
+        audio_stream = YouTube(url=video_url).streams.filter(only_audio=True).first().url
+        return jsonify({'audio_url': audio_stream})
+    except Exception as e:
+        print('error', str(e))
+        return jsonify({'error': str(e)}), 500
 
 if __name__ == '__main__':
     app.run(debug=True)

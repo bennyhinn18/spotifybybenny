@@ -1,6 +1,5 @@
 Flask
-yt_dlp
-youtube-search-python
+pytubefix
 requests
 python-dotenv
 gunicorn
